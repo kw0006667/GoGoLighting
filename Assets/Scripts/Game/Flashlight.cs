@@ -20,11 +20,14 @@ public class Flashlight : MonoBehaviour
     // Is light on
     private bool isLight;
 
+    private Collider tempCollider;
+
     // Use this for initialization
     void Start()
     {
         this.currentTranform = this.transform;
         this.flashlight = null;
+        this.tempCollider = null;
 
         // Find the flashlight in Lydar
         Light[] lights = this.GetComponentsInChildren<Light>();
@@ -62,9 +65,44 @@ public class Flashlight : MonoBehaviour
                     // Verify hit collider's tag is "Mirror"
                     if (this.hit.collider.tag.Equals("Mirror"))
                     {
-                        // Turn on the light which is shot by light.
-                        this.hit.collider.gameObject.GetComponent<Flashlight>().TurnOnLight(true);
+                        if (this.tempCollider != null)
+                        {
+                            if (this.hit.collider != this.tempCollider)
+                            {
+                                // Turn off the last light when it is moved.
+                                this.tempCollider.gameObject.GetComponent<Flashlight>().TurnOnLight(false);
+
+                                if (Vector3.Dot(this.currentTranform.TransformDirection(Vector3.back), this.hit.collider.gameObject.transform.TransformDirection(Vector3.back)) < 0)
+                                {
+                                    // Turn on the light which is shot by light.
+                                    this.hit.collider.gameObject.GetComponent<Flashlight>().TurnOnLight(true);
+                                    this.tempCollider = this.hit.collider;
+                                }
+                                else
+                                {
+                                    this.tempCollider = null;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Vector3.Dot(this.currentTranform.TransformDirection(Vector3.back), this.hit.collider.gameObject.transform.TransformDirection(Vector3.back)) < 0)
+                            {
+                                // Turn on the light which is shot by light.
+                                this.hit.collider.gameObject.GetComponent<Flashlight>().TurnOnLight(true);
+                                this.tempCollider = this.hit.collider;
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    if (this.tempCollider != null)
+                    {
+                        this.tempCollider.gameObject.GetComponent<Flashlight>().TurnOnLight(false);
+                        this.tempCollider = null;
+                    }
+
                 }
             }
         }
