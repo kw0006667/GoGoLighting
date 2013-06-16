@@ -54,10 +54,10 @@ public class Flashlight : MonoBehaviour
             if (this.isLight)
             {
                 // Shot the ray from current position forward to back.
-                this.ray = new Ray(this.currentTranform.position, this.currentTranform.TransformDirection(Vector3.back));
+                this.ray = new Ray(this.currentTranform.position + this.currentTranform.TransformDirection(Vector3.up) * 0.25f, this.currentTranform.TransformDirection(Vector3.back));
 
                 // Draw the ray as red.
-                Debug.DrawRay(this.currentTranform.position, this.currentTranform.TransformDirection(Vector3.back) * this.ShotDistance, Color.red);
+                Debug.DrawRay(this.currentTranform.position + this.currentTranform.TransformDirection(Vector3.up) * 0.25f, this.currentTranform.TransformDirection(Vector3.back) * this.ShotDistance, Color.red);
 
                 // Verify the ray is hit colliders
                 if (Physics.Raycast(this.ray, out this.hit, this.ShotDistance, this.Mask))
@@ -92,6 +92,14 @@ public class Flashlight : MonoBehaviour
                                 this.hit.collider.gameObject.GetComponent<Flashlight>().TurnOnLight(true);
                                 this.tempCollider = this.hit.collider;
                             }
+                        }
+                    }
+                    else if (this.hit.collider.tag.Equals("God"))
+                    {
+                        Light god_light = this.hit.collider.gameObject.GetComponentInChildren<Light>();
+                        if (god_light != null)
+                        {
+                            god_light.enabled = true;
                         }
                     }
                 }
